@@ -1,8 +1,11 @@
-import React from 'react'
 
-const NavBar = () => {
+type NavbarProps = {
+  onLoginClick: () => void;
+};
+
+const NavBar = ({ onLoginClick }: NavbarProps) => {
   return (
-    <nav className='h-13 border-b border-[#424242] sticky z-50 top-0'>
+    <nav className='w-full h-13 border-b border-[#424242] z-50 top-0 backdrop-blur-md left-0 fixed'>
       <div className="w-5/6 h-full mx-auto flex items-center justify-between px-8">
         <div className="flex gap-3 justify-start">
           <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
@@ -30,10 +33,10 @@ const NavBar = () => {
               <path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21" />
             </svg>
           </a>
-          <a className='text-[#ffffff] bg-[#7C6EF8] rounded-md px-3 h-7.5 font-medium text-[13px] flex items-center hover:bg-[#9182FA] duration-120'
-            href=''>
+          <button className='text-[#ffffff] bg-[#7C6EF8] rounded-md px-3 h-7.5 font-medium text-[13px] flex items-center hover:bg-[#9182FA] duration-120'
+            onClick={onLoginClick}>
             Connect
-          </a>
+          </button>
         </div>
       </div>
     </nav >
