@@ -1,14 +1,45 @@
 "use client";
 
 import { RefObject, useState } from "react";
+import { useRouter } from "next/navigation";
+import { storage } from "@/lib/storage"
 
 type HeroProps = {
   inputRef: RefObject<HTMLInputElement | null>;
 };
 
+
+
 const Hero = ({ inputRef, }: HeroProps) => {
-  const [apikey, setApiKey] = useState("");
-  const isDisabled = apikey.trim() === "";
+  const router = useRouter();
+  const [mem0ApiKey, setMem0ApiKey] = useState("");
+  const isDisabled = mem0ApiKey.trim() === "";
+
+  const validateApikey = async (): Promise<boolean> => {
+    const response = await fetch("/api/validate", {
+      headers: {
+        "mem0-apiKey": mem0ApiKey!,
+      },
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      console.log("Invalid Apikey.", data);
+      return false;
+    }
+    return true;
+  };
+
+  const saveApiKey = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const isLegit = await validateApikey();
+    if (isLegit) {
+      storage.setApiKey(mem0ApiKey);
+      console.log("Moving to the dashboard");
+      router.push("/dashboard");
+    } else {
+
+    }
+  }
 
   return (
     <section className="">
@@ -24,7 +55,9 @@ const Hero = ({ inputRef, }: HeroProps) => {
       <p className='mt-6 text-[#9896A4]'>
         The developer layer on top of Mem0 - inspect, debug, and understand your agent's memory in real time.
       </p>
-      <form className='max-w-150 mt-9'>
+      <form className='max-w-150 mt-9'
+        onSubmit={saveApiKey}
+      >
         <div className='flex gap-2 items-stretch p-1.5 bg-[#111113] rounded-2xl border border-[#2E2E38] font-["Geist_Mono",ui-monospace,"JetBrains_Mono","SFMono-Regular",monospace]'>
           <div className='text-[#5C5A6A] flex gap-2 items-center h-12 pl-2.5'>
             <svg width='12' height='12' viewBox='0 0 24 24' fill='none'
@@ -42,8 +75,8 @@ const Hero = ({ inputRef, }: HeroProps) => {
           <input className='px-2 bg-transparent text-[#EDECF0] text-[14px] tracking-[1px] flex grow outline-none focus:outline-0 border-0 focus:ring-0 focus-within:border-[#5a51ad] focus-within:shadow-[0_0_24px_rgba(124,110,248,0.40)] focus-within:bg-[#141418] focus-within:rounded-2xl'
             placeholder='m0-•••• •••• •••• ••••'
             ref={inputRef}
-            onChange={(e) => setApiKey(e.target.value)}
-            value={apikey}
+            onChange={(e) => setMem0ApiKey(e.target.value)}
+            value={mem0ApiKey}
           ></input>
           <button
             className={`flex gap-1.5 items-center 

@@ -1,11 +1,10 @@
+import { storage } from "@/lib/storage"
+import { useRouter } from "next/navigation"
 
-type NavbarProps = {
-  onLoginClick: () => void;
-};
-
-const NavBar = ({ onLoginClick }: NavbarProps) => {
+const DashboardNavBar = () => {
+  const router = useRouter();
   return (
-    <nav className='w-full h-13 border-b border-[#424242] z-50 top-0 backdrop-blur-md left-0 fixed'>
+    <nav className='w-full h-13 border-b border-[#232329] z-50 top-0 backdrop-blur-md left-0 fixed'>
       <div className="w-5/6 h-full mx-auto flex items-center justify-between px-8">
         <div className="flex gap-3 justify-start">
           <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
@@ -34,8 +33,11 @@ const NavBar = ({ onLoginClick }: NavbarProps) => {
             </svg>
           </a>
           <button className='text-[#ffffff] bg-[#7C6EF8] rounded-md px-3 h-7.5 font-medium text-[13px] flex items-center hover:bg-[#9182FA] duration-120'
-            onClick={onLoginClick}>
-            Connect
+            onClick={() => {
+              storage.remoteApiKey()
+              router.push("/");
+            }}>
+            Disconnect
           </button>
         </div>
       </div>
@@ -43,4 +45,4 @@ const NavBar = ({ onLoginClick }: NavbarProps) => {
   )
 }
 
-export default NavBar
+export default DashboardNavBar
