@@ -5,12 +5,12 @@ import { useEffect, useState } from "react";
 import DashboardNavBar from "@/components/DashboardNavBar";
 
 
-type Organization = {
+export type Organization = {
   id: string;
   name: string;
 };
 
-type Project = {
+export type Project = {
   id: string;
   name: string;
 }
@@ -29,7 +29,6 @@ const Dashboard = () => {
   let mem0ProjectName: string | null;
 
   useEffect(() => {
-    setLoadingOrganizations(true)
     const mem0ApiKey = storage.getApiKey();
     if (!mem0ApiKey) {
       console.log("Mem0 Apikey is not found.");
@@ -37,10 +36,11 @@ const Dashboard = () => {
       return;
     }
 
+    const fetchOrganizations = async () => {
+      try {
+        setLoadingOrganizations(true)
+        console.log("fetching Organizations");
 
-    try {
-      console.log("fetching Organizations");
-      const fetchOrganizations = async () => {
         const response = await fetch("/api/organizations", {
           headers: {
             "mem0-apiKey": mem0ApiKey!,
@@ -56,16 +56,13 @@ const Dashboard = () => {
         if (data.length > 0) {
           setSelectedOrganization(data[0]);
         }
-      };
-
-      fetchOrganizations();
-
-    } catch (e) {
-      console.log("Error while connecting with Mem0 server.", e);
-    } finally {
-      setLoadingOrganizations(false)
+      } catch (e) {
+        console.log("Error while connecting with Mem0 server.", e);
+      } finally {
+        setLoadingOrganizations(false)
+      }
     }
-
+    fetchOrganizations();
   }, [])
 
   useEffect(() => {
@@ -78,9 +75,9 @@ const Dashboard = () => {
       return;
     }
 
+    const fetchProjects = async () => {
+      try {
 
-    try {
-      const fetchProjects = async () => {
         const response = await fetch(`/api/organizations/${selectedOrganization.id}/projects`, {
           headers: {
             "mem0-apiKey": mem0ApiKey!,
@@ -96,22 +93,65 @@ const Dashboard = () => {
         if (data.length > 0) {
           setSelectedProject(data[0]);
         }
-      };
-
-      fetchProjects();
-
-    } catch (e) {
-      console.log("Error while connecting with Mem0 server.", e);
-    } finally {
-      setLoadingProjects(false);
-    }
-
+      } catch (e) {
+        console.log("Error while connecting with Mem0 server.", e);
+      } finally {
+        setLoadingProjects(false);
+      }
+    };
+    fetchProjects();
   }, [selectedOrganization])
 
+  if (loadingOrganizations || loadingProjects) {
+    return (
+      <div className="min-h-screen bg-black text-white">
+        <DashboardNavBar
+          organizations={organizations}
+          projects={projects}
+          selectedOrganization={selectedOrganization}
+          selectedProject={selectedProject}
+          onOrganizationChange={setSelectedOrganization}
+          onProjectChange={setSelectedProject}
+        />
 
+        <div className="w-5/6 mx-auto px-8 pt-32">
+          <div className="animate-pulse space-y-8">
+
+            <div className="space-y-3">
+              <div className="h-8 w-64 rounded-xl bg-zinc-800" />
+              <div className="h-4 w-96 rounded-lg bg-zinc-900" />
+            </div>
+
+            <div className="grid grid-cols-3 gap-6">
+              {[1, 2, 3].map((item) => (
+                <div
+                  key={item}
+                  className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6"
+                >
+                  <div className="space-y-4">
+                    <div className="h-5 w-32 rounded bg-zinc-700" />
+                    <div className="h-4 w-full rounded bg-zinc-800" />
+                    <div className="h-4 w-5/6 rounded bg-zinc-800" />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="h-screen w-5/6 mx-auto px-8 pt-24">
-      <DashboardNavBar />
+      <DashboardNavBar
+        organizations={organizations}
+        projects={projects}
+        selectedOrganization={selectedOrganization}
+        selectedProject={selectedProject}
+        onOrganizationChange={setSelectedOrganization}
+        onProjectChange={setSelectedProject}
+      />
       Dashboard
       <p>{selectedOrganization?.name}</p>
       <p>{selectedProject?.name}</p>

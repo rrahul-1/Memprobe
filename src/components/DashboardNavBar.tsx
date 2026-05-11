@@ -1,8 +1,21 @@
 import { storage } from "@/lib/storage"
 import { useRouter } from "next/navigation"
+import type { Project, Organization } from "@/app/dashboard/page";
+import { useState } from "react";
 
-const DashboardNavBar = () => {
+type DashboardNavBarProps = {
+  organizations: Organization[];
+  projects: Project[];
+  selectedOrganization: Organization | null;
+  selectedProject: Project | null;
+  onOrganizationChange: (organization: Organization) => void;
+  onProjectChange: (project: Project) => void;
+};
+
+const DashboardNavBar = ({ organizations, projects, selectedOrganization, selectedProject, onOrganizationChange, onProjectChange }: DashboardNavBarProps) => {
   const router = useRouter();
+  const [openOrgDropdown, setOpenOrgDropdown] = useState(false);
+  const [openProjectDropdown, setOpenProjectDropdown] = useState(false);
   return (
     <nav className='w-full h-13 border-b border-[#232329] z-50 top-0 backdrop-blur-md left-0 fixed'>
       <div className="w-5/6 h-full mx-auto flex items-center justify-between px-8">
@@ -13,6 +26,103 @@ const DashboardNavBar = () => {
             <rect x="2" y="14" width="6" height="2" rx="1" fill="#7C6EF8" opacity="0.4"></rect>
             <circle cx="17" cy="5" r="1.4" fill="#1DD5A3"></circle></svg>
           <h1 className='text-[#edecf0] text-sm'>Memprobe</h1>
+
+          {selectedOrganization && selectedProject && (
+            <>
+              <span className="text-[#5C5A6A] text-[13px]">/</span>
+              <h1 className='text-[#9896A4] text-[13px]'>Organization</h1>
+              <div
+                className="relative text-[#edecf0] text-[13px]"
+                onMouseEnter={() => setOpenOrgDropdown(true)}
+                onMouseLeave={() => setOpenOrgDropdown(false)}>
+                <button
+                  className="flex items-center gap-1 rounded-md hover:bg-[#18181F] transition-colors">
+                  {selectedOrganization?.name}
+
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className={`
+                  transition-transform ${openOrgDropdown ? "rotate-180" : ""}`}>
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </button>
+
+                {openOrgDropdown && (
+                  <>
+                    <div className="absolute left-0 top-full h-3 w-full" />
+                    <div
+                      className="absolute left-0 top-full mt-0.5 z-50 min-w-55 rounded-xl border border-[#232329] bg-[#0D0D11] p-1 shadow-2xl"
+                    >
+                      {organizations.map((organization) => (
+                        <button
+                          key={organization.id}
+                          onClick={() => {
+                            onOrganizationChange(organization);
+                            setOpenOrgDropdown(false);
+                          }}
+                          className="w-full rounded-lg px-3 py-2 text-left text-[13px] text-[#9896A4] hover:bg-[#18181F] hover:text-white transition-colors">
+                          {organization.name}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <span className="text-[#5C5A6A] text-[13px]">/</span>
+              <h1 className='text-[#9896A4] text-[13px]'>Project</h1>
+              <div
+                className="relative text-[#edecf0] text-[13px]"
+                onMouseEnter={() => setOpenProjectDropdown(true)}
+                onMouseLeave={() => setOpenProjectDropdown(false)}>
+                <button
+                  className="flex items-center gap-1 rounded-md hover:bg-[#18181F] transition-colors">
+                  {selectedProject?.name}
+
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className={`
+                  transition-transform ${openProjectDropdown ? "rotate-180" : ""}`}>
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </button>
+
+                {openProjectDropdown && (
+                  <>
+                    <div className="absolute left-0 top-full h-3 w-full" />
+                    <div
+                      className="absolute left-0 top-full mt-0.5 z-50 min-w-55 rounded-xl border border-[#232329] bg-[#0D0D11] p-1 shadow-2xl"
+                    >
+                      {projects.map((project) => (
+                        <button
+                          key={project.id}
+                          onClick={() => {
+                            onProjectChange(project);
+                            setOpenProjectDropdown(false);
+                          }}
+                          className="w-full rounded-lg px-3 py-2 text-left text-[13px] text-[#9896A4] hover:bg-[#18181F] hover:text-white transition-colors">
+                          {project.name}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </>
+          )}
+
+
+
         </div>
         <div className="flex gap-2 items-center">
           <a className='text-[#9896A4] text-[13px] px-2.5 py-1.5'
