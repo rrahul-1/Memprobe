@@ -17,7 +17,7 @@ const DashboardNavBar = ({ organizations, projects, selectedOrganization, select
   const [openOrgDropdown, setOpenOrgDropdown] = useState(false);
   const [openProjectDropdown, setOpenProjectDropdown] = useState(false);
   return (
-    <nav className='w-full h-13 border-b border-[#232329] backdrop-blur-md left-0 font-["Geist_Mono",ui-monospace,"JetBrains_Mono","SFMono-Regular",monospace]'>
+    <nav className='z-100 w-full h-13 border-b border-[#232329] backdrop-blur-md left-0 font-["Geist_Mono",ui-monospace,"JetBrains_Mono","SFMono-Regular",monospace]'>
       <div className="w-5/6 h-full mx-auto flex items-center justify-between px-8">
         <div className="flex gap-3 justify-start">
           <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
