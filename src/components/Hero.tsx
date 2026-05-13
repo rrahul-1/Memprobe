@@ -293,7 +293,7 @@ const Hero = ({ inputRef }: HeroProps) => {
             className="w-full object-cover"
           /> */}
           <Image
-            src="/memprobe_dashboard.png"
+            src="/Memprobe_dashboard.png"
             alt="Memprobe dashboard"
             width={1600}
             height={900}
