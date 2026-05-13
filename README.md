@@ -6,7 +6,9 @@ A developer dashboard for inspecting, querying, and managing [Mem0](https://mem0
 
 ---
 
-<!-- SCREENSHOT: Full dashboard overview — dark UI with sidebar, memory list, and details panel open. Recommended: 1600×900 PNG. Place here as: ![Dashboard overview](./docs/screenshots/overview.png) -->
+![Dashboard overview](./docs/screenshots/Memprobe_dashboard.png)
+
+![Landing Page](./docs/screenshots/Memprobe_landing_page.png)
 
 ---
 
