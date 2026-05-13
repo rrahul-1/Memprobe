@@ -31,11 +31,12 @@ Browse every memory in the current scope.
 - **Infinite scroll** — next page loads automatically as you reach the bottom of the list
 - **Memory detail panel** — click any memory to inspect its metadata, categories, timestamps, and raw JSON payload
 - **Add Memory** — dedicated form with multi-turn messages (user / assistant roles), scope pre-fill, infer toggle, and custom metadata key-value pairs; the list refreshes automatically after a successful add
+- **Update/Delete Memory** — In the Memory detail panel you can update/delete the memory
 - **Refresh** — reloads entity dropdowns and the memory list without resetting your current scope selection
 
 <!-- SCREENSHOT: All Memories view — memory selected, details panel showing metadata, categories, and raw JSON block. -->
 
-### Retrieval Tester
+### Retrieval Tester - Search
 Test semantic memory retrieval exactly as your agent calls it. Enter any natural language query, adjust `top_k`, and see ranked results with relevance scores and score bars. The AND / OR operator from the scope selector is applied to the search payload.
 
 <!-- SCREENSHOT or CLIP: Query typed in, results list visible with rank numbers and score bars, one result selected in the right panel showing retrieval context. -->
