@@ -2,6 +2,7 @@
 import { storage } from "@/lib/storage";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useToast } from "@/components/Toast";
 import DashboardNavBar from "@/components/dashboard/DashboardNavBar";
 import SideBar from "@/components/dashboard/Sidebar";
 import MemoryBrowser from "@/components/dashboard/MemoryBrowser";
@@ -89,6 +90,7 @@ async function fetchMemoriesForScope(
 
 const Dashboard = () => {
     const router = useRouter();
+    const { toast } = useToast();
 
     // Org / project
     const [loadingOrganizations, setLoadingOrganizations] = useState(true);
@@ -145,7 +147,7 @@ const Dashboard = () => {
                 setOrganizations(data);
                 if (data.length > 0) setSelectedOrganization(data[0]);
             } catch (e) {
-                console.error("Error fetching organizations", e);
+                toast("Failed to load organizations. Check your API key.", "error");
             } finally {
                 setLoadingOrganizations(false);
             }
@@ -170,7 +172,7 @@ const Dashboard = () => {
                 setProjects(data);
                 if (data.length > 0) setSelectedProject(data[0]);
             } catch (e) {
-                console.error("Error fetching projects", e);
+                toast("Failed to load projects.", "error");
             } finally {
                 setLoadingProjects(false);
             }
@@ -178,7 +180,7 @@ const Dashboard = () => {
         run();
     }, [selectedOrganization]);
 
-    // ── Entities: reset selections when project changes ───────────────────────
+    // ── Entities + UI: reset everything when project changes ─────────────────
     useEffect(() => {
         setUsers([]);
         setAgents([]);
@@ -190,6 +192,15 @@ const Dashboard = () => {
         setSelectedRun(undefined);
         setEntityPage(1);
         setEntityHasMore(false);
+        // clear derived/UI state so stale data from the previous project doesn't show
+        setMemories([]);
+        setSelectedMemory(null);
+        setRetrievalContext(null);
+        setMemoriesPage(1);
+        setMemoriesHasMore(false);
+        setCategoryFilter("all");
+        setMemoryQuery("");
+        setShowAddPanel(false);
     }, [selectedProject]);
 
     // ── Entities: fetch page 1 on project change (with auto-select) ──────────
@@ -212,7 +223,7 @@ const Dashboard = () => {
                 setEntityPage(1);
                 if (rawUsers.length > 0) setSelectedUser(rawUsers[0]);
             } catch (e) {
-                console.error("Error fetching entities", e);
+                toast("Failed to load entities.", "error");
             } finally {
                 if (!cancelled) setEntityLoading(false);
             }
@@ -248,7 +259,7 @@ const Dashboard = () => {
                 setEntityPage(1);
                 // deliberately not resetting selections
             } catch (e) {
-                console.error("Error refreshing entities", e);
+                toast("Failed to refresh entities.", "error");
             } finally {
                 if (!cancelled) setEntityLoading(false);
             }
@@ -277,7 +288,7 @@ const Dashboard = () => {
                 setMemories(data);
                 setMemoriesHasMore(hasMore);
             })
-            .catch(e => console.error("Error fetching memories", e))
+            .catch(() => toast("Failed to load memories.", "error"))
             .finally(() => { if (!cancelled) setLoadingMemories(false); });
 
         return () => { cancelled = true; };
@@ -314,7 +325,7 @@ const Dashboard = () => {
             setEntityHasMore(hasMore);
             setEntityPage(nextPage);
         } catch (e) {
-            console.error("Error loading more entities", e);
+            toast("Failed to load more entities.", "error");
         } finally {
             setEntityLoading(false);
         }
@@ -333,7 +344,7 @@ const Dashboard = () => {
             setMemoriesHasMore(hasMore);
             setMemoriesPage(nextPage);
         } catch (e) {
-            console.error("Error loading more memories", e);
+            toast("Failed to load more memories.", "error");
         } finally {
             setLoadingMoreMemories(false);
         }
@@ -436,6 +447,7 @@ const Dashboard = () => {
 
                 {view === "retrieval" && (
                     <RetrievalView
+                        key={`${selectedOrganization?.id}-${selectedProject?.id}`}
                         selectedUser={selectedUser}
                         selectedAgent={selectedAgent}
                         selectedApp={selectedApp}
@@ -449,6 +461,7 @@ const Dashboard = () => {
 
                 {view === "timeline" && (
                     <TimelineView
+                        key={`${selectedOrganization?.id}-${selectedProject?.id}`}
                         memories={memories}
                         initialMemoryId={selectedMemory?.id ?? null}
                         selectedUser={selectedUser}

@@ -4,6 +4,21 @@ import { RefObject, useState } from "react";
 import { useRouter } from "next/navigation";
 import { storage } from "@/lib/storage";
 import Image from "next/image";
+import { useToast } from "@/components/Toast";
+
+function Dots() {
+    return (
+        <span className="flex gap-[3px] items-center">
+            {[0, 1, 2].map(i => (
+                <span
+                    key={i}
+                    className="w-1 h-1 rounded-full bg-current"
+                    style={{ animation: `pulseDot 1.2s ease-in-out ${i * 0.2}s infinite` }}
+                />
+            ))}
+        </span>
+    );
+}
 
 type HeroProps = {
   inputRef: RefObject<HTMLInputElement | null>;
@@ -44,11 +59,13 @@ const FEATURES = [
 
 const Hero = ({ inputRef }: HeroProps) => {
   const router = useRouter();
+  const { toast } = useToast();
 
   const [mem0ApiKey, setMem0ApiKey] = useState("");
   const [loading, setLoading] = useState(false);
+  const [connected, setConnected] = useState(false);
 
-  const isDisabled = mem0ApiKey.trim() === "" || loading;
+  const isDisabled = mem0ApiKey.trim() === "" || loading || connected;
 
   const validateApikey = async (): Promise<boolean> => {
     const response = await fetch("/api/validate", {
@@ -76,10 +93,13 @@ const Hero = ({ inputRef }: HeroProps) => {
 
     if (isLegit) {
       storage.setApiKey(mem0ApiKey);
-      router.push("/dashboard");
+      setConnected(true);
+      setLoading(false);
+      setTimeout(() => router.push("/dashboard"), 600);
+    } else {
+      toast("Invalid API key. Please check and try again.", "error");
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
@@ -143,16 +163,29 @@ const Hero = ({ inputRef }: HeroProps) => {
 
             <button
               className={`flex gap-1.5 items-center rounded-xl font-medium px-4 m-1 duration-150 text-[14px]
-              ${isDisabled
+              ${connected
+                  ? "bg-[#1DD5A3]/15 text-[#1DD5A3] border border-[#1DD5A3]/30 cursor-default"
+                  : isDisabled
                   ? "bg-[#2A2A32] text-[#6B6B76] cursor-not-allowed"
                   : "bg-[#7C6EF8] text-white hover:bg-[#9182FA]"
                 }`}
               disabled={isDisabled}
             >
-              {loading ? "Connecting..." : "Connect"}
-
-              {!loading && (
-                <span>
+              {connected ? (
+                <>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m5 12 5 5L20 7" />
+                  </svg>
+                  Connected
+                </>
+              ) : loading ? (
+                <>
+                  <Dots />
+                  Connecting
+                </>
+              ) : (
+                <>
+                  Connect
                   <svg
                     width="12"
                     height="12"
@@ -163,12 +196,10 @@ const Hero = ({ inputRef }: HeroProps) => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
-                    <>
-                      <path d="M5 12h14" />
-                      <path d="m13 5 7 7-7 7" />
-                    </>
+                    <path d="M5 12h14" />
+                    <path d="m13 5 7 7-7 7" />
                   </svg>
-                </span>
+                </>
               )}
             </button>
           </div>

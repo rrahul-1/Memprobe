@@ -92,7 +92,7 @@ bun run start
 | Mem0 | [`mem0ai` v3](https://www.npmjs.com/package/mem0ai) SDK |
 | Runtime | Bun / Node.js |
 
-All Mem0 API calls are proxied through Next.js API routes. The API key is forwarded as a request header and never stored server-side.
+`Note: All Mem0 API calls are proxied through Next.js API routes. The API key is forwarded as a request header and never stored server-side.`
 
 ---
 
@@ -154,24 +154,23 @@ Each route reads the `mem0-apiKey` header forwarded by the client, calls Mem0, a
 
 ---
 
-## Screenshots guide
+## Screenshots
 
-Suggested assets to capture and place in `docs/screenshots/`:
+### Dashboard overview
+![Dashboard overview](./docs/screenshots/Memprobe_dashboard.png)
 
-| # | File name | What to show |
-|---|---|---|
-| 1 | `overview.png` | Full dashboard, sidebar populated, memory list, and details panel open — 1600×900 |
-| 2 | `scope-selector.gif` | Opening a dropdown, typing to filter, selecting an entity — ≤5 s |
-| 3 | `all-memories.png` | Memory selected, details panel showing categories and raw JSON |
-| 4 | `add-memory.gif` | Click "+ Add Memory", fill the form, click submit, list refreshes |
-| 5 | `retrieval.png` | Query results with score bars, one result selected showing retrieval context |
-| 6 | `timeline.png` | Memory with at least one UPDATE — before/after diff and date grouping visible |
+### Landing Page
+![Landing Page](./docs/screenshots/Memprobe_landing_page.png)
 
-Replace each `<!-- SCREENSHOT -->` comment above with:
+### Scope selection & All Memories
+![All Memories](./docs/screenshots/Scope_Memory_demo.gif)
 
-```md
-![Alt text](./docs/screenshots/filename.png)
-```
+### Add Memory
+![Add Memories](./docs/screenshots/Add_Memory.png)
+
+### Retrieval - Search
+![Retrieval](./docs/screenshots/Retrieval_demo.png)
+
 
 ---
 
