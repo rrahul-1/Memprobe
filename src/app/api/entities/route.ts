@@ -38,15 +38,17 @@ export async function GET(req: Request) {
     } else {
         const rawResponse:EntityResponse = await response.json();
         const data = rawResponse.results;
+        console.log(data);
+        
         return NextResponse.json(
             {
-                data: data.map((entity) => {
-                    return {
-                        name: entity.name,
-                        type: entity.type,
-                        id: entity.id,
-                    }
-                })
+                data: data.map((entity) => ({
+                    name: entity.name,
+                    type: entity.type,
+                    id: entity.id,
+                })),
+                has_more: rawResponse.next !== null,
+                count: rawResponse.count,
             },
             { status: 200 }
         )
