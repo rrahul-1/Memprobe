@@ -339,7 +339,7 @@ const Hero = ({ inputRef }: HeroProps) => {
 
         <div className="rounded-2xl sm:rounded-3xl overflow-hidden border border-[#232329] bg-[#0D0D11] shadow-[0_0_80px_rgba(124,110,248,0.08)]">
           <Image
-            src="/memprobe_dashboard.png"
+            src="/Memprobe_dashboard.png"
             alt="Memprobe dashboard"
             width={1600}
             height={900}
