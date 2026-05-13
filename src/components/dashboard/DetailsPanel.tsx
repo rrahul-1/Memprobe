@@ -2,6 +2,9 @@
 import { useState, useEffect } from "react";
 import { Memory } from "@/app/api/memories/route";
 import { RetrievalContext } from "./RetrievalView";
+import { storage } from "@/lib/storage";
+import { useToast } from "@/components/Toast";
+import { getCategoryColor } from "@/lib/categories";
 
 type View = "memories" | "retrieval" | "timeline";
 
@@ -11,6 +14,8 @@ type Props = {
     retrievalContext: RetrievalContext | null;
     onClose: () => void;
     onOpenTimeline: () => void;
+    onMemoryUpdated?: (id: string, newText: string) => void;
+    onMemoryDeleted?: (id: string) => void;
 };
 
 function relTime(iso: string) {
@@ -26,11 +31,12 @@ function fullTime(iso: string) {
     return new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 }
 
-function CategoryPill({ children }: { children: React.ReactNode }) {
+function CategoryPill({ cat }: { cat: string }) {
+    const c = getCategoryColor(cat);
     return (
         <span className="inline-block text-[11px] px-[7px] py-px rounded-[4px] whitespace-nowrap"
-            style={{ background: "rgba(124,110,248,0.10)", color: "#A8B3CF", border: "1px solid rgba(124,110,248,0.18)" }}>
-            {children}
+            style={{ background: c.bg, color: c.text, border: `1px solid ${c.border}` }}>
+            {cat}
         </span>
     );
 }
@@ -115,8 +121,11 @@ function DetailEmpty({ view }: { view: View }) {
     );
 }
 
-const DetailsPanel = ({ memory, view, retrievalContext, onClose, onOpenTimeline }: Props) => {
+const DetailsPanel = ({ memory, view, retrievalContext, onClose, onOpenTimeline, onMemoryUpdated, onMemoryDeleted }: Props) => {
+    const { toast } = useToast();
     const [editing, setEditing] = useState(false);
+    const [saving, setSaving] = useState(false);
+    const [deleting, setDeleting] = useState(false);
     const [text, setText] = useState(memory?.memory ?? "");
     const [showJson, setShowJson] = useState(true);
     const [copied, setCopied] = useState(false);
@@ -126,21 +135,55 @@ const DetailsPanel = ({ memory, view, retrievalContext, onClose, onOpenTimeline 
         setEditing(false);
     }, [memory?.id]);
 
+    async function handleSave() {
+        if (!memory) return;
+        setSaving(true);
+        try {
+            const res = await fetch(`/api/memories/${memory.id}`, {
+                method: "PUT",
+                headers: { "mem0-apiKey": storage.getApiKey()!, "Content-Type": "application/json" },
+                body: JSON.stringify({ text }),
+            });
+            if (!res.ok) throw new Error(await res.text());
+            setEditing(false);
+            toast("Memory updated.", "success");
+            onMemoryUpdated?.(memory.id, text);
+        } catch {
+            toast("Failed to update memory.", "error");
+        } finally {
+            setSaving(false);
+        }
+    }
+
+    async function handleDelete() {
+        if (!memory) return;
+        setDeleting(true);
+        try {
+            const res = await fetch(`/api/memories/${memory.id}`, {
+                method: "DELETE",
+                headers: { "mem0-apiKey": storage.getApiKey()! },
+            });
+            if (!res.ok) throw new Error(await res.text());
+            toast("Memory deleted.", "success");
+            onMemoryDeleted?.(memory.id);
+        } catch {
+            toast("Failed to delete memory.", "error");
+        } finally {
+            setDeleting(false);
+        }
+    }
+
     if (!memory) return <DetailEmpty view={view} />;
 
     const isMemories = view === "memories";
     const isRetrieval = view === "retrieval";
 
-    const jsonPayload = JSON.stringify({
-        id: memory.id,
-        memory: memory.memory,
-        categories: memory.categories ?? [],
-        user_id: memory.user_id,
-        created_at: memory.created_at,
-        updated_at: memory.updated_at,
-        ...(isRetrieval && retrievalContext && { score: retrievalContext.score }),
-        metadata: memory.metadata,
-    }, null, 2);
+    const jsonPayload = JSON.stringify(
+        isRetrieval && retrievalContext
+            ? { ...memory, _retrieval: { query: retrievalContext.query, rank: retrievalContext.rank, score: retrievalContext.score } }
+            : memory,
+        null, 2
+    );
 
     function handleCopyJson() {
         navigator.clipboard?.writeText(jsonPayload).catch(() => { });
@@ -201,13 +244,12 @@ const DetailsPanel = ({ memory, view, retrievalContext, onClose, onOpenTimeline 
                     <div className="flex gap-2 mt-3">
                         {isMemories && (editing ? (
                             <>
-                                {/* TODO: connect PATCH to /v1/memories/{id} to persist edits */}
-                                <button onClick={() => setEditing(false)}
-                                    className="h-7 px-2.5 flex items-center gap-1.5 text-[12px] font-medium bg-[#7C6EF8] text-white rounded-md transition-all cursor-pointer">
+                                <button onClick={handleSave} disabled={saving}
+                                    className="h-7 px-2.5 flex items-center gap-1.5 text-[12px] font-medium bg-[#7C6EF8] text-white rounded-md transition-all cursor-pointer disabled:opacity-60">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 5 5L20 7" /></svg>
-                                    Save
+                                    {saving ? "Saving…" : "Save"}
                                 </button>
-                                <button onClick={() => { setText(memory.memory); setEditing(false); }}
+                                <button onClick={() => { setText(memory.memory); setEditing(false); }} disabled={saving}
                                     className="h-7 px-2.5 text-[12px] text-[#9896A4] bg-transparent border-none cursor-pointer">
                                     Cancel
                                 </button>
@@ -275,11 +317,22 @@ const DetailsPanel = ({ memory, view, retrievalContext, onClose, onOpenTimeline 
                     <MetaRow k="category" v={
                         <span className="flex items-center gap-1 flex-wrap">
                             {(memory.categories ?? []).length > 0
-                                ? (memory.categories ?? []).map(c => <CategoryPill key={c}>{c}</CategoryPill>)
+                                ? (memory.categories ?? []).map(c => <CategoryPill key={c} cat={c} />)
                                 : <span className="text-[#5C5A6A]">—</span>}
                         </span>
                     } />
-                    <MetaRow k="user_id" v={<span className="mono text-[#EDECF0]">{memory.user_id}</span>} />
+                    {[
+                        ["user_id", memory.user_id],
+                        ["agent_id", memory.agent_id],
+                        ["app_id", memory.app_id],
+                        ["run_id", memory.run_id],
+                    ].map(([k, v]) => (
+                        <MetaRow key={k} k={k!} v={
+                            v
+                                ? <span className="mono text-[#EDECF0]">{v}</span>
+                                : <span className="text-[#5C5A6A]">—</span>
+                        } />
+                    ))}
                     <MetaRow k="created" v={
                         <span className="flex flex-col">
                             <span className="text-[#EDECF0] text-[12px]">{relTime(memory.created_at)}</span>
@@ -336,16 +389,17 @@ const DetailsPanel = ({ memory, view, retrievalContext, onClose, onOpenTimeline 
                     )}
                 </button>
                 {isMemories && (
-                    // TODO: connect to DELETE /v1/memories/{id} to persist deletion
                     <button
-                        className="h-7 px-2.5 flex items-center gap-1.5 text-[12px] text-[#E5534B] bg-transparent border border-[rgba(229,83,75,0.30)] rounded-md transition-all cursor-pointer"
-                        onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(229,83,75,0.12)"}
+                        onClick={handleDelete}
+                        disabled={deleting}
+                        className="h-7 px-2.5 flex items-center gap-1.5 text-[12px] text-[#E5534B] bg-transparent border border-[rgba(229,83,75,0.30)] rounded-md transition-all cursor-pointer disabled:opacity-60"
+                        onMouseEnter={e => { if (!deleting) (e.currentTarget as HTMLElement).style.background = "rgba(229,83,75,0.12)"; }}
                         onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                         </svg>
-                        Delete
+                        {deleting ? "Deleting…" : "Delete"}
                     </button>
                 )}
             </div>

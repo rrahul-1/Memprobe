@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 const BASE_URL = "https://api.mem0.ai";
 
 type RequestOptions = {
-    method: "GET" | "POST" | "PUT" | "DELETE";
+    method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
     apikey: string;
     headers?: HeadersInit;
     body?: unknown
