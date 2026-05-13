@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import ClientProviders from "@/components/ClientProviders";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -26,7 +27,9 @@ export default function RootLayout({
       lang="en"
       className={`w-full h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <ClientProviders>{children}</ClientProviders>
+      </body>
     </html>
   );
 }

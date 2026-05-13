@@ -16,7 +16,7 @@ const LandingNavBar = ({ onLoginClick }: NavbarProps) => {
         </div>
         <div className="flex gap-2 items-center">
           <a className='text-[#9896A4] text-[13px] px-2.5 py-1.5'
-            href=''>
+            href='https://github.com/rrahul-1/Memprobe#memprobe'>
             Docs
           </a>
           {/* <a className='text-[#9896A4] text-[13px] px-2.5 py-1.5'
@@ -25,7 +25,7 @@ const LandingNavBar = ({ onLoginClick }: NavbarProps) => {
           </a> */}
           <span className='bg-[#232329] w-px h-4.5'></span>
           <a className='text-[#9896A4] h-7.5 w-7.5 border border-[#232329] flex items-center justify-center rounded-md'
-            href=''>
+            href='https://github.com/rrahul-1/Memprobe'>
             <svg width='16' height='16' viewBox='0 0 24 24' fill='none'
               stroke="currentColor" strokeWidth='1.5' strokeLinecap="round" strokeLinejoin="round"
               style={{ flexShrink: 0 }}>
