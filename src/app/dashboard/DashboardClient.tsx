@@ -72,10 +72,15 @@ async function fetchMemoriesForScope(
     if (appId) filters.push({ app_id: appId });
     if (runId) filters.push({ run_id: runId });
 
+    // When no specific scope is selected, use wildcard to fetch all memories
+    const filterPayload = filters.length === 0
+        ? { AND: [{ user_id: "*" }] }
+        : { [filterOperator]: filters };
+
     const response = await fetch(`/api/memories?page=${page}`, {
         method: "POST",
         headers: { "mem0-apiKey": mem0ApiKey, "Content-Type": "application/json" },
-        body: JSON.stringify({ filters: { [filterOperator]: filters } }),
+        body: JSON.stringify({ filters: filterPayload }),
     });
 
     if (!response.ok) return { data: [], hasMore: false };
@@ -221,7 +226,8 @@ const Dashboard = () => {
                 setRuns(rawRuns);
                 setEntityHasMore(hasMore);
                 setEntityPage(1);
-                if (rawUsers.length > 0) setSelectedUser(rawUsers[0]);
+                // Kick off the initial memories fetch via refreshTrigger (no auto-select)
+                setRefreshTrigger(t => t + 1);
             } catch (e) {
                 toast("Failed to load entities.", "error");
             } finally {
@@ -271,8 +277,9 @@ const Dashboard = () => {
     // ── Memories: fetch page 1 on scope/operator/refresh change ─────────────
     useEffect(() => {
         const mem0ApiKey = storage.getApiKey();
-        if (!mem0ApiKey) return;
-        if (!selectedUser && !selectedAgent && !selectedApp && !selectedRun) return;
+        // selectedOrganization/selectedProject are not deps — used as stable guards
+        // so we only fetch after the project + entity load cycle has completed
+        if (!mem0ApiKey || !selectedOrganization || !selectedProject) return;
 
         let cancelled = false;
         setLoadingMemories(true);
@@ -490,6 +497,14 @@ const Dashboard = () => {
                         retrievalContext={retrievalContext}
                         onClose={() => setSelectedMemory(null)}
                         onOpenTimeline={() => setView("timeline")}
+                        onMemoryUpdated={(id, newText) => {
+                            setMemories(prev => prev.map(m => m.id === id ? { ...m, memory: newText } : m));
+                            setSelectedMemory(prev => prev?.id === id ? { ...prev, memory: newText } : prev);
+                        }}
+                        onMemoryDeleted={(id) => {
+                            setMemories(prev => prev.filter(m => m.id !== id));
+                            setSelectedMemory(null);
+                        }}
                     />
                 )}
             </div>

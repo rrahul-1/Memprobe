@@ -17,7 +17,10 @@ type StructuredAttributes = {
 export type Memory = {
     id: string;
     memory: string;
-    user_id: string;
+    user_id?: string;
+    agent_id?: string;
+    app_id?: string;
+    run_id?: string;
     metadata: any;
     type: string
     categories: string[]

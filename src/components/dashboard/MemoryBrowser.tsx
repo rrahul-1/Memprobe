@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { Memory } from "@/app/api/memories/route";
+import { getCategoryColor } from "@/lib/categories";
 
 type Props = {
     memories: Memory[];
@@ -31,15 +32,45 @@ function relTime(iso: string) {
 
 const CATEGORIES = ["all", "preferences", "work", "personal", "code", "location", "tools", "schedule", "health", "reading"];
 
-function CategoryPill({ children }: { children: React.ReactNode }) {
+function CategoryPill({ cat }: { cat: string }) {
+    const c = getCategoryColor(cat);
     return (
         <span className="inline-block text-[11px] px-[7px] py-px rounded-[4px] whitespace-nowrap"
-            style={{
-                background: "rgba(124,110,248,0.10)",
-                color: "#A8B3CF",
-                border: "1px solid rgba(124,110,248,0.18)",
-            }}>
-            {children}
+            style={{ background: c.bg, color: c.text, border: `1px solid ${c.border}` }}>
+            {cat}
+        </span>
+    );
+}
+
+const ENTITY_ICONS: Record<string, React.ReactNode> = {
+    user: (
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="8" r="4" /><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+        </svg>
+    ),
+    agent: (
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="3" /><path d="M9 9h.01M15 9h.01M9 15h6" />
+        </svg>
+    ),
+    app: (
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8M12 17v4" />
+        </svg>
+    ),
+    run: (
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3" />
+        </svg>
+    ),
+};
+
+function EntityChip({ type, value }: { type: string; value: string }) {
+    return (
+        <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-[2px] rounded-[4px] mono whitespace-nowrap max-w-[100px] overflow-hidden text-ellipsis"
+            style={{ background: "#18181C", border: "1px solid #2E2E38", color: "#5C5A6A" }}>
+            <span className="shrink-0">{ENTITY_ICONS[type]}</span>
+            <span className="overflow-hidden text-ellipsis">{value}</span>
         </span>
     );
 }
@@ -70,19 +101,33 @@ function MemoryCard({ m, active, onClick }: { m: Memory; active: boolean; onClic
                 <span className="absolute left-[-1px] top-[10px] bottom-[10px] w-0.5 bg-[#7C6EF8] rounded-full" />
             )}
             <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-1.5 flex-wrap">
                     {(m.categories ?? []).slice(0, 3).map(c => (
-                        <CategoryPill key={c}>{c}</CategoryPill>
+                        <CategoryPill key={c} cat={c} />
                     ))}
                 </div>
                 <span className="text-[11px] text-[#5C5A6A] shrink-0 mono">{relTime(m.updated_at)}</span>
             </div>
             <div className="text-[14px] text-[#EDECF0] leading-snug">{m.memory}</div>
-            <div className="flex items-center justify-end gap-2">
-                <span className="mono text-[11px] text-[#5C5A6A]">{m.user_id}</span>
-                <span className="text-[#2E2E38]">·</span>
-                <span className="mono text-[11px] text-[#5C5A6A]">{m.id.slice(0, 8)}…</span>
-            </div>
+            {(() => {
+                const entities = ([
+                    m.user_id  && { type: "user",  value: m.user_id },
+                    m.agent_id && { type: "agent", value: m.agent_id },
+                    m.app_id   && { type: "app",   value: m.app_id },
+                    m.run_id   && { type: "run",   value: m.run_id },
+                ] as Array<{ type: string; value: string } | false>).filter(Boolean) as { type: string; value: string }[];
+                const shown = entities.slice(0, 2);
+                const extra = entities.length - 2;
+                return (
+                    <div className="flex items-center gap-1.5">
+                        {shown.map(e => <EntityChip key={e.type} type={e.type} value={e.value} />)}
+                        {extra > 0 && (
+                            <span className="text-[10px] text-[#5C5A6A] mono px-1">+{extra}</span>
+                        )}
+                        <span className="ml-auto mono text-[11px] text-[#5C5A6A]">{m.id.slice(0, 8)}…</span>
+                    </div>
+                );
+            })()}
         </div>
     );
 }
