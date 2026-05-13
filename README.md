@@ -1,13 +1,14 @@
-# memprobe
+# Memprobe
 
 A developer dashboard for inspecting, querying, and managing [Mem0](https://mem0.ai) memory stores. Connect your Mem0 API key and get a full-featured UI for browsing memories, testing semantic retrieval, and tracing the full history of every memory change.
 
 **Live demo → [memprobe.vercel.app](https://memprobe.vercel.app/)**
 
 ---
-
+## Dashboard overview
 ![Dashboard overview](./docs/screenshots/Memprobe_dashboard.png)
 
+## Landing Page
 ![Landing Page](./docs/screenshots/Memprobe_landing_page.png)
 
 ---
