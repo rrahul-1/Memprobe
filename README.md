@@ -30,6 +30,7 @@ Browse every memory in the current scope.
 - **Sort** by most recent or oldest first
 - **Memory detail panel** - click any memory to inspect its metadata, categories, timestamps, and raw JSON payload
 - **Add Memory** - dedicated form with multi-turn messages (user / assistant roles), scope pre-fill, infer toggle, and custom metadata key-value pairs; the list refreshes automatically after a successful add
+- **Update/Delete Memory** — In the Memory detail panel you can update/delete the memory
 - **Refresh** - reloads entity dropdowns and the memory list without resetting your current scope selection
 
 <!-- SCREENSHOT: All Memories view - memory selected, details panel showing metadata, categories, and raw JSON block. -->
