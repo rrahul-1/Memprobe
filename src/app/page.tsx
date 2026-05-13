@@ -14,7 +14,7 @@ export default function Home() {
   return (
     <div>
       <LandingNavBar onLoginClick={focusInput}/>
-      <div className="h-screen w-5/6 mx-auto px-8 pt-24">
+      <div className="w-full max-w-7xl mx-auto px-5 sm:px-8 pt-20 sm:pt-24">
         <Hero inputRef={inputRef}/>
       </div>
     </div>
