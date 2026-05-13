@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import ClientProviders from "@/components/ClientProviders";
+import { Analytics } from "@vercel/analytics/next"
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -29,6 +30,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <ClientProviders>{children}</ClientProviders>
+        <Analytics />
       </body>
     </html>
   );
