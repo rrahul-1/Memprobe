@@ -4,26 +4,23 @@ type NavbarProps = {
 
 const LandingNavBar = ({ onLoginClick }: NavbarProps) => {
   return (
-    <nav className='w-full h-13 border-b border-[#232329] z-50 top-0 backdrop-blur-md left-0 fixed'>
-      <div className="w-5/6 h-full mx-auto flex items-center justify-between px-8">
-        <div className="flex gap-3 justify-start">
+    <nav className='w-full h-13 border-b border-[#232329] z-50 top-0 backdrop-blur-md left-0 fixed bg-[#0A0A0B]/80'>
+      <div className="w-full max-w-7xl h-full mx-auto flex items-center justify-between px-5 sm:px-8">
+        <div className="flex gap-3 justify-start items-center">
           <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
             <rect x="2" y="4" width="14" height="2" rx="1" fill="#7C6EF8"></rect>
             <rect x="2" y="9" width="10" height="2" rx="1" fill="#7C6EF8" opacity="0.7"></rect>
             <rect x="2" y="14" width="6" height="2" rx="1" fill="#7C6EF8" opacity="0.4"></rect>
-            <circle cx="17" cy="5" r="1.4" fill="#1DD5A3"></circle></svg>
+            <circle cx="17" cy="5" r="1.4" fill="#1DD5A3"></circle>
+          </svg>
           <h1 className='text-[#edecf0] text-sm'>Memprobe</h1>
         </div>
         <div className="flex gap-2 items-center">
-          <a className='text-[#9896A4] text-[13px] px-2.5 py-1.5'
+          <a className='hidden sm:block text-[#9896A4] text-[13px] px-2.5 py-1.5'
             href='https://github.com/rrahul-1/Memprobe#memprobe'>
             Docs
           </a>
-          {/* <a className='text-[#9896A4] text-[13px] px-2.5 py-1.5'
-            href=''>
-            Changelog
-          </a> */}
-          <span className='bg-[#232329] w-px h-4.5'></span>
+          <span className='hidden sm:block bg-[#232329] w-px h-4.5'></span>
           <a className='text-[#9896A4] h-7.5 w-7.5 border border-[#232329] flex items-center justify-center rounded-md'
             href='https://github.com/rrahul-1/Memprobe'>
             <svg width='16' height='16' viewBox='0 0 24 24' fill='none'
@@ -38,7 +35,7 @@ const LandingNavBar = ({ onLoginClick }: NavbarProps) => {
           </button>
         </div>
       </div>
-    </nav >
+    </nav>
   )
 }
 
