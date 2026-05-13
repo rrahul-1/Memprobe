@@ -16,26 +16,25 @@ A developer dashboard for inspecting, querying, and managing [Mem0](https://mem0
 ## Features
 
 ### Scope selector
-Filter memories by any combination of `user_id`, `agent_id`, `app_id`, and `run_id`. Each selector lists all known entities from your Mem0 project — select a specific value or leave it as **all** to skip that dimension. Toggle the **all / any** switch to control whether multiple selections are combined with AND (must match all) or OR (match any).
+Filter memories by any combination of `user_id`, `agent_id`, `app_id`, and `run_id`. Each selector lists all known entities from your Mem0 project - select a specific value or leave it as **all** to skip that dimension. Toggle the **all / any** switch to control whether multiple selections are combined with AND (must match all) or OR (match any).
 
 Entity lists are paginated: scroll to the bottom of a dropdown to load the next page, or type to filter what's already loaded.
 
-<!-- CLIP: ~5s — open a scope dropdown, type to filter, select an entity, watch the memory list reload. -->
+<!-- CLIP: ~5s - open a scope dropdown, type to filter, select an entity, watch the memory list reload. -->
 
 ### All Memories
 Browse every memory in the current scope.
 
 - **Live search** across memory text, IDs, and categories
-- **Category filter** — click any category in the sidebar or use the toolbar dropdown
+- **Category filter** - click any category in the sidebar or use the toolbar dropdown
 - **Sort** by most recent or oldest first
-- **Infinite scroll** — next page loads automatically as you reach the bottom of the list
-- **Memory detail panel** — click any memory to inspect its metadata, categories, timestamps, and raw JSON payload
-- **Add Memory** — dedicated form with multi-turn messages (user / assistant roles), scope pre-fill, infer toggle, and custom metadata key-value pairs; the list refreshes automatically after a successful add
-- **Refresh** — reloads entity dropdowns and the memory list without resetting your current scope selection
+- **Memory detail panel** - click any memory to inspect its metadata, categories, timestamps, and raw JSON payload
+- **Add Memory** - dedicated form with multi-turn messages (user / assistant roles), scope pre-fill, infer toggle, and custom metadata key-value pairs; the list refreshes automatically after a successful add
+- **Refresh** - reloads entity dropdowns and the memory list without resetting your current scope selection
 
-<!-- SCREENSHOT: All Memories view — memory selected, details panel showing metadata, categories, and raw JSON block. -->
+<!-- SCREENSHOT: All Memories view - memory selected, details panel showing metadata, categories, and raw JSON block. -->
 
-### Retrieval Tester
+### Retrieval Tester - Search
 Test semantic memory retrieval exactly as your agent calls it. Enter any natural language query, adjust `top_k`, and see ranked results with relevance scores and score bars. The AND / OR operator from the scope selector is applied to the search payload.
 
 <!-- SCREENSHOT or CLIP: Query typed in, results list visible with rank numbers and score bars, one result selected in the right panel showing retrieval context. -->
@@ -43,7 +42,7 @@ Test semantic memory retrieval exactly as your agent calls it. Enter any natural
 ### Timeline
 Trace the full change history of any memory. Pick a memory from the dropdown picker, and the timeline renders a date-grouped event trail (TODAY / THIS WEEK / EARLIER) showing every `CREATED`, `UPDATED`, and `DELETED` event. For updates, the old and new memory text are shown side by side. Clicking **Timeline** in the memory detail panel pre-selects that memory automatically.
 
-<!-- SCREENSHOT: Timeline view — a memory selected, showing a CREATED → UPDATED event trail with the before/after diff visible. -->
+<!-- SCREENSHOT: Timeline view - a memory selected, showing a CREATED → UPDATED event trail with the before/after diff visible. -->
 
 ### Sidebar stats and categories
 The left panel shows live counts (total memories, unique categories) and a clickable category list with relative frequency bars. Clicking a category filters the All Memories view instantly.
@@ -71,7 +70,7 @@ bun install        # or: npm install
 bun run dev        # or: npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). On first load you'll be prompted to enter your Mem0 API key — it's stored in `localStorage` and only sent to Mem0's API. No `.env` file or server-side configuration is required.
+Open [http://localhost:3000](http://localhost:3000). On first load you'll be prompted to enter your Mem0 API key - it's stored in `localStorage` and only sent to Mem0's API. No `.env` file or server-side configuration is required.
 
 ### Building for production
 
@@ -86,9 +85,9 @@ bun run start
 
 | Layer | Choice |
 |---|---|
-| Framework | [Next.js 16](https://nextjs.org/) — App Router |
+| Framework | [Next.js 16](https://nextjs.org/) - App Router |
 | UI | React 19 with React Compiler (`babel-plugin-react-compiler`) |
-| Styling | [Tailwind CSS v4](https://tailwindcss.com/) — PostCSS plugin |
+| Styling | [Tailwind CSS v4](https://tailwindcss.com/) - PostCSS plugin |
 | Mem0 | [`mem0ai` v3](https://www.npmjs.com/package/mem0ai) SDK |
 | Runtime | Bun / Node.js |
 
@@ -102,7 +101,7 @@ bun run start
 memprobe/
 ├── src/
 │   ├── app/
-│   │   ├── api/                          # Next.js route handlers — Mem0 proxies
+│   │   ├── api/                          # Next.js route handlers - Mem0 proxies
 │   │   │   ├── entities/route.ts         # GET  /v1/entities            paginated entity list
 │   │   │   ├── memories/
 │   │   │   │   ├── route.ts              # POST /v3/memories/            list with filters + pagination
@@ -119,15 +118,15 @@ memprobe/
 │   │   └── page.tsx                      # Landing page / API key entry
 │   ├── components/
 │   │   └── dashboard/
-│   │       ├── DashboardNavBar.tsx       # Top bar — org / project switcher
-│   │       ├── Sidebar.tsx               # Left panel — scope, views, stats, categories
+│   │       ├── DashboardNavBar.tsx       # Top bar - org / project switcher
+│   │       ├── Sidebar.tsx               # Left panel - scope, views, stats, categories
 │   │       ├── leftPanel/
 │   │       │   └── ScopeSelection.tsx    # Entity dropdown: search + infinite scroll
 │   │       ├── MemoryBrowser.tsx         # All Memories middle panel
 │   │       ├── RetrievalView.tsx         # Retrieval Tester middle panel
 │   │       ├── TimelineView.tsx          # Timeline middle panel
-│   │       ├── DetailsPanel.tsx          # Right panel — metadata, raw JSON, actions
-│   │       └── AddMemoryPanel.tsx        # Right panel — add memory form
+│   │       ├── DetailsPanel.tsx          # Right panel - metadata, raw JSON, actions
+│   │       └── AddMemoryPanel.tsx        # Right panel - add memory form
 │   └── lib/
 │       ├── mem0.ts                       # Authenticated fetch wrapper for Mem0 API
 │       └── storage.ts                    # localStorage helpers (API key read/write)
@@ -148,7 +147,7 @@ Each route reads the `mem0-apiKey` header forwarded by the client, calls Mem0, a
 | `POST /api/memories/search` | `POST /v3/memories/search/` | `query`, `top_k`, `filters` |
 | `POST /api/memories/add` | `POST /v3/memories/add/` | `messages`, scope fields, `infer`, `metadata` |
 | `GET /api/memories/[id]/history` | `GET /v1/memories/:id/history/` | Full event log for one memory |
-| `GET /api/entities` | `GET /v1/entities` | `org_id`, `project_id`, `page` — returns `has_more` |
+| `GET /api/entities` | `GET /v1/entities` | `org_id`, `project_id`, `page` - returns `has_more` |
 | `GET /api/organizations` | Mem0 orgs API | Lists all orgs for the key |
 | `GET /api/organizations/[id]/projects` | Mem0 projects API | Lists projects for an org |
 
